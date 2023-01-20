@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PongAccess</string>
+
+    <string name="state">Prêt</string>
+    <string name="mode_win">Gagné</string>
+    <string name="mode_lose">Perdu</string>
+    <string name="mode_pause">Pause</string>
+</resources>
