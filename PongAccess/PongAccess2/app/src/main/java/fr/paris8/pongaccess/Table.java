@@ -1,32 +1,26 @@
 package fr.paris8.pongaccess;
+import fr.paris8.pongaccess.BlueActivity.ReadInput;
 
 
-import static android.content.Context.SENSOR_SERVICE;
-//import static androidx.core.app.AppOpsManagerCompat.Api23Impl.getSystemService;
-
-import static androidx.lifecycle.Transformations.map;
-
-import android.app.ProgressDialog;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.hardware.Sensor;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,9 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 
-import java.io.InputStream;
 import java.util.Random;
-import java.util.UUID;
 
 public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -47,7 +39,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
     private TextView mStatus;
     private TextView mScoreJoueur;
     private TextView mScoreAdversaire;
-
 
     MediaPlayer mediaPlayer;
     Integer[] integer = {1,-1};
@@ -74,41 +65,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
     private float mTouchDernierY;
     // ajouté le 05/01
 
-    private BlueActivity bleuActivity;
-    private BlueActivity.ReadInput readInput;
-    private float valeur ;
-
-
-
-    private static final String TAG = "BlueTest5-MainActivity";
-    private int mMaxChars = 50000;//Default
-    private UUID mDeviceUUID;
-    private static BluetoothSocket mBTSocket;
-    private BlueActivity.ReadInput mReadThread = null;
-
-
-    private boolean mIsUserInitiatedDisconnect = false;
-
-    private boolean mIsBluetoothConnected = false;
-
-    private BluetoothDevice mDevice;
-
-    private ProgressDialog progressDialog;
-
-    // modif du 07/01
-    public static String strInput;
-    public static byte[] buffer = new byte[256];
-
-    //Juba
-   /* private SensorManager mSensorManager;
-    private Sensor mSensor;
-    private float mSensorValue;
-
-    private void setupSensor() {
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_POTENTIOMETER);
-        mSensorManager.registerListener((SensorEventListener) this, mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }*/
 
 
     public void initTable(Context ctx, AttributeSet attr) throws IOException {
@@ -120,8 +76,11 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
 
 
-        afficher_debug();
-        gestion();
+
+
+
+
+
         // threads et initialisation de la boucle
         mJeu = new JeuThread(this.getContext(), mHolder, this, new Handler(){
 
@@ -187,33 +146,10 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
 
 
+
     }
 
-    public Integer getStr() throws InterruptedException {
-        readInput = new BlueActivity.ReadInput();
-        //new Thread(readInput).start();
-        new Thread(readInput).currentThread();
 
-        int i = 0;
-        Integer nombre = 0;
-        for (i = 0; i < BlueActivity.buffer.length && BlueActivity.buffer[i] != 0; i++) {
-            bleuActivity.strInput = new String(bleuActivity.buffer, 0, i);
-            //System.out.println("++++++++++++++++valeur strInput dans PongTable :+++:" + BlueActivity.strInput);
-            Thread.sleep(5);
-
-            try {
-                new Thread(readInput).start();
-                nombre = Integer.parseInt(BlueActivity.strInput);
-                //float flt = (float) nombre;
-               System.out.println("val en int : ---------------- " + nombre);
-                //System.out.println("val en flt : ---------------- " + flt);
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return nombre;
-    }
 
     private static int randBetween(int start, int end){
         return start+ (int) Math.round(Math.random() * (end-start));
@@ -291,54 +227,31 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+
+
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        String strInput = ReadInput.strInput;
+        try{
+            float value = Float.parseFloat(strInput);
+            System.out.println("la valeur de value dans la classe table%%%%%%% 1111  :"+value);
+
+        System.out.println("la valeur de strInput dans la classe table%%%%%%% 1111  :"+strInput);
+
+
         if (!mJeu.sensorsOn()){
-            float u = map(valeur, 0, 1080, 0, 1080);
             switch (event.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     if (mJeu.isBetweenRounds()){
                         mJeu.setState(JeuThread.STAT_RUNNING);
                     }else {
-                        if (raquetteTouche(event, mJoueur)){
-                            bouger = true;
-
-                            mTouchDernierY = u;
-                            // c'est là que ça doit se passer !!!!!!!!!!!!!!!!!!!!!!
-
-
-                        }
+                        bouger = true;
+                        bougerRaquetJoueur(value, mJoueur);
                     }
                     break;
                 // da i texreb !!!!
-                case MotionEvent.ACTION_MOVE:
-                    if (bouger){
-                        try {
 
-                            //getStr();
-                            valeur = (float) getStr();
-                            float y = u;
-
-
-                            System.out.println("MotionEvent.AXIS_VSCROLL :::yyyyyyyyyyy:::"+valeur+"uuuu"+u);
-                        float deltay = y - mTouchDernierY;
-                       // int z = (int) event.getAxisValue(MotionEvent.AXIS_VSCROLL);
-                       // System.out.println("MotionEvent.AXIS_VSCROLL :::getAxisValue:::"+z);
-
-
-
-                            System.out.println("la valeur en float : "+valeur+"    la valeur de y : "+y );
-
-                            mTouchDernierY = y;
-                            System.out.println("getY getY  mTouchDernierY : "+mTouchDernierY);
-
-                            bougerRaquetJoueur(deltay, mJoueur);
-                            System.out.println("deltay+++++++++++++++++++++++++"+deltay);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
                 case MotionEvent.ACTION_UP:
                     bouger = false;
                     break;
@@ -351,22 +264,21 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
+        }catch(NumberFormatException e){
+            System.out.println("Impossible de convertir strInput en float : "+e.getMessage());
+        }
         return true;
 
-    }
-
-    private float map(float valeur, int i, int i1, int i2, int i3) {
-        return valeur;
     }
 
     public JeuThread getGame(){
         return mJeu;
     }
 
-    public static void bougerRaquetJoueur(float dy, Joueur player){
+    public static void bougerRaquetJoueur(float deltay, Joueur player){
 
         synchronized (mHolder){
-            bougerJoueur(player, player.bounds.left, player.bounds.top + dy);
+            bougerJoueur(player, player.bounds.left, player.bounds.top + deltay);
         }
     }
 
@@ -484,120 +396,12 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         mScoreAdversaire =view;}
     public void setStatusView(TextView view){mStatus=view;}
 
-    public void afficher_debug(){
-        //Log.d("info strInput tooth**************","info :***********vide pour le moment"+MonitoringScreen.ReadInput );
-        try {
-            float x = (float) getStr();
-            System.out.println(" debuguer kan moment !!!!!!!!!!!!!!!"+x);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-    /**
-     * besoin de ce code pour recuperer la valeur de strInput ici
-     */
-    private void gestion(){
-        try {
-            while(true){
-
-                int essai = getStr();
-                float z = Float.parseFloat(String.valueOf(essai));
-
-                System.out.println(z+"^^^^^^^^^^^");
-                Table.bougerRaquetJoueur(z , mJoueur);
-            }
-        }catch (Exception e){
-            System.out.println("erreur");
-        }
-
-    }
-    public static class ReadInput implements Runnable {
-
-        public boolean bStop = false;
-        private Thread t;
-
-
-
-        //public String strInput;
-
-        public ReadInput() {
-            t = new Thread(this, "Input Thread");
-            t.start();
-        }
-
-
-        public boolean isRunning() {
-            return t.isAlive();
-        }
-
-
-
-
-        @Override
-        public void run() {
-            InputStream inputStream;
-
-            try {
-                inputStream = mBTSocket.getInputStream();
-                while (!bStop) {
-
-                    if (inputStream.available() > 0) {
-                        inputStream.read(buffer);
-                        int i = 0;
-                        /*
-                         * This is needed because new String(buffer) is taking the entire buffer i.e. 256 chars on Android 2.3.4 http://stackoverflow.com/a/8843462/1287554
-                         */
-                        for (i = 0; i < buffer.length && buffer[i] != 0; i++) {
-
-                        }
-                        strInput = new String(buffer, 0, i);
-                        //strInputstrInput = mReadThread.strInput;
-                        System.out.println("Debogage info strInput tooth**************info :***********"+strInput);
-
-                        // gestion();
-                        Log.d("info strInput tooth**************","info :***********"+strInput+"********en byte ");
 
 
 
 
 
 
-                        /*
-                         * If checked then receive text, better design would probably be to stop thread if unchecked and free resources, but this is a quick fix
-                         */
-
-
-
-                        if (true) {
-                            new Runnable() {
-                                @Override
-                                public void run() {
-
-
-                                }
-                            };
-                        }
-
-                    }
-
-                    Thread.sleep(200);
-                }
-
-            } catch (IOException e) {
-// TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-// TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-
-        }
-
-}}
+}
 
 

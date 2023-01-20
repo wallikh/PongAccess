@@ -6,6 +6,7 @@ package fr.paris8.pongaccess;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -26,6 +27,11 @@ public class PongActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);  // ajoutée du git
 
         mJeuThread = table.getGame();
+        WindowManager windowManager = getWindowManager();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels; System.out.println("width  : "+width);
+        int height = displayMetrics.heightPixels;System.out.println("heigth  : "+height);
 
 
     }

@@ -40,8 +40,7 @@ public class BlueActivity extends Activity {
     private ProgressDialog progressDialog;
 
     // modif du 07/01
-    public static String strInput;
-    public static byte[] buffer = new byte[256];
+
 
 
 
@@ -63,13 +62,18 @@ public class BlueActivity extends Activity {
         startActivity(intent2);
 
 
+
+
     }
+
 
 
     public static class ReadInput implements Runnable {
 
         public boolean bStop = false;
         private Thread t;
+        public static String strInput;
+        public static byte[] buffer = new byte[256];
 
 
 
@@ -105,6 +109,7 @@ public class BlueActivity extends Activity {
                         for (i = 0; i < buffer.length && buffer[i] != 0; i++) {
 
                         }
+
                         strInput = new String(buffer, 0, i);
                         //strInputstrInput = mReadThread.strInput;
                         System.out.println("Debogage info strInput tooth**************info :***********"+strInput);
@@ -278,7 +283,10 @@ public class BlueActivity extends Activity {
         }
 
 
+
     }
+
+
 
 }
 
