@@ -1,4 +1,6 @@
 package fr.paris8.pongaccess;
+import static fr.paris8.pongaccess.BlueActivity.ReadInput.strInput;
+
 import fr.paris8.pongaccess.BlueActivity.ReadInput;
 
 
@@ -29,11 +31,15 @@ import androidx.core.content.ContextCompat;
 import java.io.IOException;
 
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
 
-
+    public int racketWidth;
+    public int racketHeight;
     //public static final String TAG = PongTable.class.getSimpleName();
     private JeuThread mJeu;
     private TextView mStatus;
@@ -147,6 +153,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
 
 
+
     }
 
 
@@ -227,7 +234,19 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    public void potentiometreRaquette() {
+        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 
+// This schedule a task to run every 200 milliseconds:
+        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                // Mise à jour de la position de la raquette en utilisant la valeur de strInput
+                float value = Float.parseFloat(strInput);
+                bougerRaquetJoueur(value, mJoueur);
+            }
+        }, 0, 200, TimeUnit.MILLISECONDS);
+
+    }
 
 
     @Override
@@ -235,34 +254,15 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         String strInput = ReadInput.strInput;
         try{
             float value = Float.parseFloat(strInput);
-            System.out.println("la valeur de value dans la classe table%%%%%%% 1111  :"+value);
-
-        System.out.println("la valeur de strInput dans la classe table%%%%%%% 1111  :"+strInput);
 
 
-        if (!mJeu.sensorsOn()){
-            switch (event.getAction()){
-                case MotionEvent.ACTION_DOWN:
+
                     if (mJeu.isBetweenRounds()){
                         mJeu.setState(JeuThread.STAT_RUNNING);
                     }else {
-                        bouger = true;
-                        bougerRaquetJoueur(value, mJoueur);
+                        //bougerRaquetJoueur(value, mJoueur);
+                        potentiometreRaquette();
                     }
-                    break;
-                // da i texreb !!!!
-
-                case MotionEvent.ACTION_UP:
-                    bouger = false;
-                    break;
-            }
-        }else {
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                if (mJeu.isBetweenRounds()){
-                    mJeu.setState(JeuThread.STAT_RUNNING);
-                }
-            }
-        }
 
         }catch(NumberFormatException e){
             System.out.println("Impossible de convertir strInput en float : "+e.getMessage());
@@ -270,6 +270,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         return true;
 
     }
+
 
     public JeuThread getGame(){
         return mJeu;

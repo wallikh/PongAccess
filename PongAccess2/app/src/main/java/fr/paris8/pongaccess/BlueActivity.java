@@ -1,9 +1,17 @@
 package fr.paris8.pongaccess;
 
 
+import fr.paris8.pongaccess.Joueur;
+import static fr.paris8.pongaccess.BlueActivity.ReadInput.strInput;
+import static fr.paris8.pongaccess.Table.bougerRaquetJoueur;
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.Manifest;
 import android.app.Activity;
@@ -39,17 +47,12 @@ public class BlueActivity extends Activity {
 
     private ProgressDialog progressDialog;
 
-    // modif du 07/01
-
-
-
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blue);
-        //ActivityHelper.initialize(this);
 
         Intent intent = getIntent();
         Bundle b = intent.getExtras();
@@ -60,7 +63,6 @@ public class BlueActivity extends Activity {
 
         Intent intent2 = new Intent(getApplicationContext(), JeuActivity.class);
         startActivity(intent2);
-
 
 
 
