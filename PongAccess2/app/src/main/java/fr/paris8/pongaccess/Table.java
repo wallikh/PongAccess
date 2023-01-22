@@ -337,7 +337,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
                 float potentio = Float.parseFloat(reception);
                 bougerRaquetJoueur(potentio, mJoueur);
             }
-        }, 0, 200, TimeUnit.MILLISECONDS);
+        }, 0, 100, TimeUnit.MILLISECONDS);
 
     }
 
@@ -358,7 +358,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         String strInput = ReadInput.reception;
         try{
-            //float potentio = Float.parseFloat(strInput);
+            //float potentio = Float.parseFloat(reception);
                     if (mJeu.isBetweenRounds()){
                         mJeu.setState(JeuThread.STAT_RUNNING);
                     }else {
