@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private Button connexion;
     private ListView listView;
     private BluetoothAdapter mBTAdapter;
-    private static final int BT_ENABLE_REQUEST = 10; // This is the code we use for BT Enable
+    private static final int BT_ENABLE_REQUEST = 10;
     private static final int SETTINGS = 20;
     private UUID mDeviceUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private int mBufferSize = 50000; //Default
@@ -55,15 +55,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         this.setContentView(R.layout.activity_main);
-
-
-        //setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
 
         recherche = (Button) findViewById(R.id.Recherche);
         connexion = (Button) findViewById(R.id.Connexion);
@@ -215,9 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 listDevices.add(device);
             }
             Log.d("liste de quoi,,*********************","la liste : **************"+listDevices);
-            // l'addresse de mon esp32 est : (08:3A:F2:99:55:D6) **************************
-            //****************************************************
-            //*****************************************************************************
+
             System.out.println("la liste : ***************************************"+listDevices);
             return listDevices;
 
@@ -230,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 MyAdapter adapter = (MyAdapter) listView.getAdapter();
                 adapter.replaceItems(listDevices);
             } else {
-                msg("No paired devices found, please pair your serial BT device and try again");
+                msg("Aucun appareil jumelé n'a été trouvé, veuillez jumeler votre appareil BT-serie et réessayer.");
             }
         }
 
@@ -324,8 +315,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-// Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.homescreen, menu);
         return true;
     }
 
@@ -333,8 +322,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
        switch (item.getItemId()) {
             case R.id.action_settings:
-                //Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
-                //startActivityForResult(intent, SETTINGS);
+
                 break;
         }
         return super.onOptionsItemSelected(item);

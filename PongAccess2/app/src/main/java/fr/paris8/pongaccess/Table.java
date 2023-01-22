@@ -1,28 +1,20 @@
 package fr.paris8.pongaccess;
-import static fr.paris8.pongaccess.BlueActivity.ReadInput.strInput;
 
+import static fr.paris8.pongaccess.BlueActivity.ReadInput.reception;
 import fr.paris8.pongaccess.BlueActivity.ReadInput;
-
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.InputDevice;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +32,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
     public int racketWidth;
     public int racketHeight;
-    //public static final String TAG = PongTable.class.getSimpleName();
     private JeuThread mJeu;
     private TextView mStatus;
     private TextView mScoreJoueur;
@@ -69,7 +60,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
     private boolean bouger =false;
     private float mTouchDernierY;
-    // ajouté le 05/01
 
 
 
@@ -77,15 +67,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         mContext = ctx;
         mHolder = getHolder();
         mHolder.addCallback(this);
-
-        // pour deboguer
-
-
-
-
-
-
-
 
         // threads et initialisation de la boucle
         mJeu = new JeuThread(this.getContext(), mHolder, this, new Handler(){
@@ -112,19 +93,19 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         int racketWidth = a.getInteger(R.styleable.PongTable_racketWidth,100);
         int balleRadius = a.getInteger(R.styleable.PongTable_ballRadius,35);
 
-        // set player
+        // définir le joueur
         Paint joueurPaint = new Paint();
         joueurPaint.setAntiAlias(true);
         joueurPaint.setColor(ContextCompat.getColor(mContext,R.color.player_color));
         mJoueur = new Joueur(racketWidth, racketHeight, joueurPaint);
 
-        //set opponent
+        //définir opposant ou adversaire
         Paint adversairePaint = new Paint();
         adversairePaint.setAntiAlias(true);
         adversairePaint.setColor(ContextCompat.getColor(mContext,R.color.opponent_color));
         mAdversaire = new Joueur(racketWidth, racketHeight, adversairePaint);
 
-        //set ball
+        //définir la balle
         Paint ballePaint = new Paint();
         ballePaint.setAntiAlias(true);
         ballePaint.setColor(ContextCompat.getColor(mContext,R.color.ball_color));
@@ -147,12 +128,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
         mTableBoundPaint.setStrokeWidth(15.0f);
 
         mIaProbabilite = 0.7f;
-
-        // ajouté le 05/01
-
-
-
-
 
     }
 
@@ -237,12 +212,12 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
     public void potentiometreRaquette() {
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 
-// This schedule a task to run every 200 milliseconds:
+        // Cette tâche est planifiée pour être exécutée toutes les 200 millisecondes
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                // Mise à jour de la position de la raquette en utilisant la valeur de strInput
-                float value = Float.parseFloat(strInput);
-                bougerRaquetJoueur(value, mJoueur);
+                // Mise à jour de la position de la raquette en utilisant la valeur de -reception-
+                float potentio = Float.parseFloat(reception);
+                bougerRaquetJoueur(potentio, mJoueur);
             }
         }, 0, 200, TimeUnit.MILLISECONDS);
 
@@ -251,12 +226,9 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        String strInput = ReadInput.strInput;
+        String strInput = ReadInput.reception;
         try{
-            float value = Float.parseFloat(strInput);
-
-
-
+            float potentio = Float.parseFloat(strInput);
                     if (mJeu.isBetweenRounds()){
                         mJeu.setState(JeuThread.STAT_RUNNING);
                     }else {
@@ -265,7 +237,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
                     }
 
         }catch(NumberFormatException e){
-            System.out.println("Impossible de convertir strInput en float : "+e.getMessage());
+            System.out.println("Impossible de convertir reception en float : "+e.getMessage());
         }
         return true;
 
