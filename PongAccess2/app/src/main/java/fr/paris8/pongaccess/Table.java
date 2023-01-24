@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -455,17 +454,13 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
      * @param canvas
      */
     public void misAJour(Canvas canvas){
-        // collisions code
+
         if (collisionJoueurs(mJoueur,mBalle)){
             handleCollision(mJoueur,mBalle);
-            //mediaPlayer=MediaPlayer.create(mContext,0);
-            //mediaPlayer.setLooping(false);
-            //mediaPlayer.start();
+
         }else if (collisionJoueurs(mAdversaire,mBalle)){
             handleCollision(mAdversaire,mBalle);
-            //mediaPlayer=MediaPlayer.create(mContext,0);
-            //mediaPlayer.setLooping(false);
-            //mediaPlayer.start();
+
         }else if (collisionHautEtBas()){
             mBalle.velocity_y = - mBalle.velocity_y;
         }else if (collisionGauche()){
@@ -532,12 +527,12 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     /**
-     * La méthode collisionJoueurs(Joueur player, Balle balle) vérifie si la balle entre en collision
-     * avec un des joueurs en utilisant la méthode intersects() de l'objet Rect qui définit les limites
-     * du joueur. Cette méthode prend en entrée les coordonnées x et y des coins supérieur gauche et
-     * inférieur droit d'un rectangle et retourne vrai si les rectangles se chevauchent.
-     * Dans ce cas, les coordonnées x et y sont calculées en utilisant les propriétés de
-     * la balle (cx, cy, getRadius()).
+     *La méthode handleCollision(Joueur player, Balle balle) gère les conséquences de la collision avec
+     * le joueur. Si la balle entre en collision avec le joueur contrôlé par le joueur humain, la vitesse
+     * de la balle est augmentée de 5% et sa coordonnée x est déplacée de sorte qu'elle ne soit plus en
+     * collision avec le joueur. Si la balle entre en collision avec l'IA, la vitesse de la balle est
+     * augmentée de 5% et la vitesse de l'IA est augmentée de 3%. La coordonnée x de la balle est
+     * déplacée de sorte qu'elle ne soit plus en collision avec l'IA.
      * @param player
      * @param balle
      */
@@ -619,12 +614,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
      * @param view
      */
     public void setStatusView(TextView view){mStatus=view;}
-
-
-
-
-
-
 
 }
 
