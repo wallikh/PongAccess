@@ -324,7 +324,7 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
      * la variable reception (qui est récupérée à partir d'un potentiomètre externe).
      * La méthode bougerRaquetJoueur(float potentio, Joueur joueur) est appelée pour mettre à jour
      * la position de la raquette en utilisant la valeur de potentio. La méthode bougerRaquetJoueur
-     * est censé être utilisé pour déplacer la raquette selon la valeur de potentio.
+     * est utilisée pour déplacer la raquette selon la valeur de potentio.
      */
     public void potentiometreRaquette() {
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
@@ -355,7 +355,6 @@ public class Table extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        String strInput = ReadInput.reception;
         try{
             //float potentio = Float.parseFloat(reception);
                     if (mJeu.isBetweenRounds()){
